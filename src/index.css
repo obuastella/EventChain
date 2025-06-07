@@ -15,4 +15,5 @@ body {
   --color-secondary: #e384ff;
   --color-mint: #ffa3fd;
   --color-foreground: #f5f5f5;
+  --font-inter: "Inter", sans-serif;
 }
