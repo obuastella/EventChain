@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Index from "./pages";
+import Index from "./pages/LandingPage";
 
 function App() {
   return (
