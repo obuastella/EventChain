@@ -12,7 +12,7 @@ export default function Layout({ children }: { children: any }) {
       <div
         className={`hidden md:block transition-all duration-300 group ${
           isSidebarOpen ? "w-64" : "w-16"
-        } bg-[#25253a] shadow text-white hover:w-64`}
+        } bg-gradient-to-b from-purple-900/80 to-slate-900/90 shadow text-white hover:w-64`}
       >
         <Sidebar isCollapsed={!isSidebarOpen} />
       </div>

@@ -1,10 +1,30 @@
 import { useUser } from "@civic/auth-web3/react";
 import { motion } from "framer-motion";
 import { Hand } from "lucide-react";
-
+import { useEffect } from "react";
+import { userHasWallet } from "@civic/auth-web3";
 export default function Header() {
   const { user } = useUser();
+  console.log(user);
+  const userContext = useUser();
 
+  useEffect(() => {
+    async function checkOrCreateWallet() {
+      // Check if userContext and user exist
+      if (!userContext || !userContext.user) return;
+
+      if (!userHasWallet(userContext)) {
+        console.log("User has no wallet, creating one...");
+        // Call createWallet on the userContext, not the user
+        await userContext.createWallet();
+        console.log("Wallet created!");
+      } else {
+        console.log("User already has a wallet:", userContext.solana.address);
+      }
+    }
+
+    checkOrCreateWallet();
+  }, [userContext]);
   return (
     <motion.section
       className="rounded-sm relative p-6 md:p-8 flex items-start gap-4 w-full h-32 overflow-hidden"
