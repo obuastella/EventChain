@@ -1,3 +1,4 @@
+import { useUser } from "@civic/auth-web3/react";
 import {
   CalendarDays,
   LayoutDashboard,
@@ -11,11 +12,12 @@ import { toast } from "react-toastify";
 
 export default function Sidebar({ isCollapsed }: { isCollapsed: boolean }) {
   const navigate = useNavigate();
-
+  const { signOut } = useUser();
   const handleLogout = async () => {
     try {
       toast.success("Logged out successfully!");
       navigate("/");
+      signOut();
     } catch (error: any) {
       console.log("Error logging out: ", error?.message);
     }

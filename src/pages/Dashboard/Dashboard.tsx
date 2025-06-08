@@ -1,3 +1,5 @@
+import Header from "./components/Header";
+
 export default function Dashboard() {
-  return <div className="">Dashboard page</div>;
+  return <Header />;
 }
