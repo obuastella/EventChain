@@ -17,3 +17,23 @@ body {
   --color-foreground: #f5f5f5;
   --font-inter: "Inter", sans-serif;
 }
+
+.login-button {
+  color: #e384ff !important;
+  padding: 0.5rem !important;
+  border: 1px solid #ffa3fd !important;
+}
+.login-button:hover {
+  color: #ffa3fd !important;
+  background-color: #211f30 !important;
+}
+
+.internal-button {
+  color: #00caff !important;
+  box-shadow: 2px !important;
+}
+.internal-button:hover {
+  color: #00caff !important;
+  box-shadow: 2px !important;
+  background-color: #211f30 !important;
+}
