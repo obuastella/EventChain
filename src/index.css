@@ -16,6 +16,7 @@ body {
   --color-mint: #ffa3fd;
   --color-foreground: #f5f5f5;
   --font-inter: "Inter", sans-serif;
+  --color-layout: #25253a;
 }
 
 .login-button {

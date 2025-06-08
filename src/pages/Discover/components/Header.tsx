@@ -1,10 +1,6 @@
-import { useUser } from "@civic/auth-web3/react";
 import { motion } from "framer-motion";
-import { Hand } from "lucide-react";
 
 export default function Header() {
-  const { user } = useUser();
-
   return (
     <motion.section
       className="rounded-sm relative p-6 md:p-8 flex items-start gap-4 w-full h-32 overflow-hidden"
@@ -25,9 +21,7 @@ export default function Header() {
         <motion.div
           whileHover={{ scale: 1.05 }}
           transition={{ type: "spring", stiffness: 400 }}
-        >
-          <Hand size={40} className="text-white animate-pulse" />
-        </motion.div>
+        ></motion.div>
 
         <div>
           <motion.h1
@@ -36,7 +30,7 @@ export default function Header() {
             animate={{ x: 0 }}
             transition={{ delay: 0.1 }}
           >
-            Hello, {user?.name}
+            Discover latest events
           </motion.h1>
           <motion.p
             className="text-sm md:text-base text-white/90 mt-1 drop-shadow-sm"
@@ -44,11 +38,7 @@ export default function Header() {
             animate={{ x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            Today is{" "}
-            {new Date().toLocaleDateString("en-US", { weekday: "long" })}.
-            <span className="block mt-1">
-              Discover the Latest Events Next to You!
-            </span>
+            Browse all events
           </motion.p>
         </div>
       </div>

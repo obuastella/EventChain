@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import CivicProviderWrapper from "./components/CivicProviderWrapper";
+import Discover from "./pages/Discover/Discover";
 function App() {
   return (
     <>
@@ -16,6 +17,14 @@ function App() {
               element={
                 <Layout>
                   <Dashboard />
+                </Layout>
+              }
+            />
+            <Route
+              path="/discover"
+              element={
+                <Layout>
+                  <Discover />
                 </Layout>
               }
             />
