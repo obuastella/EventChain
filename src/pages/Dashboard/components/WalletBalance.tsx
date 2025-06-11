@@ -168,53 +168,9 @@ const WalletBalance = () => {
     };
   }, []);
 
-  // Loading component
-  // const Loading = () => (
-  //   <motion.div
-  //     className="flex items-center justify-center py-8"
-  //     initial={{ opacity: 0 }}
-  //     animate={{ opacity: 1 }}
-  //   >
-  //     <div className="flex items-center space-x-2">
-  //       <motion.div
-  //         className="w-4 h-4 bg-purple-500 rounded-full"
-  //         animate={{
-  //           scale: [1, 1.2, 1],
-  //           opacity: [1, 0.5, 1],
-  //         }}
-  //         transition={{
-  //           duration: 1.5,
-  //           repeat: Infinity,
-  //           delay: 0,
-  //         }}
-  //       />
-  //       <motion.div
-  //         className="w-4 h-4 bg-pink-500 rounded-full"
-  //         animate={{
-  //           scale: [1, 1.2, 1],
-  //           opacity: [1, 0.5, 1],
-  //         }}
-  //         transition={{
-  //           duration: 1.5,
-  //           repeat: Infinity,
-  //           delay: 0.2,
-  //         }}
-  //       />
-  //       <motion.div
-  //         className="w-4 h-4 bg-purple-500 rounded-full"
-  //         animate={{
-  //           scale: [1, 1.2, 1],
-  //           opacity: [1, 0.5, 1],
-  //         }}
-  //         transition={{
-  //           duration: 1.5,
-  //           repeat: Infinity,
-  //           delay: 0.4,
-  //         }}
-  //       />
-  //     </div>
-  //   </motion.div>
-  // );
+  if (!userContext || !userContext.solana || !userContext.solana.wallet) {
+    return <Loading />;
+  }
 
   if (!userHasWallet(userContext)) {
     return null;
