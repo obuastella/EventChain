@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { userHasWallet } from "@civic/auth-web3";
 export default function Header() {
   const { user } = useUser();
-  console.log(user);
   const userContext = useUser();
 
   useEffect(() => {
@@ -14,12 +13,12 @@ export default function Header() {
       if (!userContext || !userContext.user) return;
 
       if (!userHasWallet(userContext)) {
-        console.log("User has no wallet, creating one...");
+        // console.log("User has no wallet, creating one...");
         // Call createWallet on the userContext, not the user
         await userContext.createWallet();
-        console.log("Wallet created!");
+        // console.log("Wallet created!");
       } else {
-        console.log("User already has a wallet:", userContext.solana.address);
+        // console.log("User already has a wallet:", userContext.solana.address);
       }
     }
 

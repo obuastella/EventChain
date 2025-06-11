@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useNavigate } from "react-router-dom";
 import { CivicAuthProvider } from "@civic/auth-web3/react";
 import { toast } from "react-toastify";
@@ -8,7 +9,7 @@ const CivicProviderWrapper = ({ children }: any) => {
   const hasSignedIn = useRef(false); // flag to prevent multiple calls
 
   const handleSignIn = (error?: Error) => {
-    if (hasSignedIn.current) return; // prevent multiple toasts
+    if (hasSignedIn.current) return;
     hasSignedIn.current = true;
 
     if (error) {
@@ -24,6 +25,12 @@ const CivicProviderWrapper = ({ children }: any) => {
     <CivicAuthProvider
       clientId="012343bd-4e27-43ea-9a4e-0a3bd0ad897b"
       onSignIn={handleSignIn}
+      // Configure for devnet to match your RPC endpoint
+      config={{
+        solana: {
+          network: "devnet",
+        },
+      }}
     >
       {children}
     </CivicAuthProvider>

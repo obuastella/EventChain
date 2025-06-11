@@ -5,8 +5,8 @@ export const eventsData: any = [
     date: "July 15, 2025",
     time: "10:00 AM",
     location: "San Francisco, CA",
-    price: "0.05 ETH",
-    priceUSD: "$150",
+    price: "0.001 SOL",
+    priceUSD: "$0.15",
     attendees: 250,
     maxAttendees: 500,
     image:
@@ -20,8 +20,8 @@ export const eventsData: any = [
     date: "July 22, 2025",
     time: "7:00 PM",
     location: "New York, NY",
-    price: "0.02 ETH",
-    priceUSD: "$60",
+    price: "1 SOL",
+    priceUSD: "$160.00",
     attendees: 120,
     maxAttendees: 200,
     image:
@@ -35,8 +35,8 @@ export const eventsData: any = [
     date: "August 5, 2025",
     time: "9:00 AM",
     location: "Miami, FL",
-    price: "0.08 ETH",
-    priceUSD: "$240",
+    price: "0.002 SOL",
+    priceUSD: "$0.30",
     attendees: 180,
     maxAttendees: 300,
     image:
