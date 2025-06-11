@@ -5,6 +5,7 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import CivicProviderWrapper from "./components/CivicProviderWrapper";
 import Discover from "./pages/Discover/Discover";
+import MyTickets from "./pages/MyTickets/MyTickets";
 function App() {
   return (
     <>
@@ -28,7 +29,16 @@ function App() {
                 </Layout>
               }
             />
+            <Route
+              path="/my-tickets"
+              element={
+                <Layout>
+                  <MyTickets />
+                </Layout>
+              }
+            />
           </Routes>
+
           <ToastContainer />
         </CivicProviderWrapper>
       </Router>
