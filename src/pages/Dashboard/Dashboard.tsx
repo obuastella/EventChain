@@ -1,43 +1,12 @@
-import {
-  Ticket,
-  Search,
-  TrendingUp,
-  Users,
-  Sparkles,
-  ArrowRight,
-  Zap,
-} from "lucide-react";
+import { Ticket, Search, Sparkles, ArrowRight, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import WalletBalance from "./components/WalletBalance";
 import Header from "./components/Header";
 import { useNavigate } from "react-router-dom";
+import { stats } from "./statsData";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  // Stats data
-  const stats = [
-    {
-      label: "Tickets bought",
-      value: "12",
-      icon: <Ticket className="w-5 h-5" />,
-      color: "from-blue-500 to-cyan-500",
-      bgColor: "bg-blue-500/20",
-    },
-    {
-      label: "Total Spent",
-      value: "8.2 SOL",
-      icon: <TrendingUp className="w-5 h-5" />,
-      color: "from-green-500 to-emerald-500",
-      bgColor: "bg-green-500/20",
-    },
-    {
-      label: "Events Hosted",
-      value: "2",
-      icon: <Users className="w-5 h-5" />,
-      color: "from-purple-500 to-pink-500",
-      bgColor: "bg-purple-500/20",
-    },
-  ];
 
   // Fun quick actions with more personality
   const quickActions = [
