@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   LogOut,
   Search,
-  Settings,
   Ticket,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -57,12 +56,12 @@ export default function Sidebar({ isCollapsed }: { isCollapsed: boolean }) {
           isCollapsed={isCollapsed}
         />
 
-        <SidebarItem
+        {/* <SidebarItem
           icon={<Settings size={20} />}
           label="Settings"
           to="/settings"
           isCollapsed={isCollapsed}
-        />
+        /> */}
       </div>
 
       {/* Logout Item at the bottom */}

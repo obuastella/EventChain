@@ -1,4 +1,4 @@
-import { LayoutDashboard, CalendarDays, Search, Settings } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Search, Ticket } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 export default function BottomNav() {
@@ -7,8 +7,8 @@ export default function BottomNav() {
   const navItems = [
     { to: "/dashboard", icon: <LayoutDashboard />, label: "Overview" },
     { to: "/discover", icon: <Search />, label: "Discover" },
+    { to: "/my-tickets", icon: <Ticket />, label: "My Tickets" },
     { to: "/manage", icon: <CalendarDays />, label: "Manage" },
-    { to: "/settings", icon: <Settings />, label: "Profile" },
   ];
 
   return (
