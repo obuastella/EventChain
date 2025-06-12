@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import CivicProviderWrapper from "./components/CivicProviderWrapper";
 import Discover from "./pages/Discover/Discover";
 import MyTickets from "./pages/MyTickets/MyTickets";
+import ManageEvents from "./pages/ManageEvents/ManageEvents";
 function App() {
   return (
     <>
@@ -34,6 +35,14 @@ function App() {
               element={
                 <Layout>
                   <MyTickets />
+                </Layout>
+              }
+            />
+            <Route
+              path="/manage"
+              element={
+                <Layout>
+                  <ManageEvents />
                 </Layout>
               }
             />
