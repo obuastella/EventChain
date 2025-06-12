@@ -45,5 +45,5 @@ MetaTicket uses **[Civic Auth](https://www.civic.com/)** for seamless Web3 authe
 
 ### Clone the Repo
 ```bash
-git clone https://github.com/yourusername/metaticket.git
-cd metaticket
+git clone
+npm i
