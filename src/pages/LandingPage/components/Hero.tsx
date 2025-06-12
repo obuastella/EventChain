@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export default function Hero() {
-  const { user } = useUser();
+  const { user, signIn }: any = useUser();
+
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -140,7 +141,9 @@ export default function Hero() {
               className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-full text-lg shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
             >
               {user == null ? (
-                "Launch Platform"
+                <h2 onClick={signIn} className="sign-in">
+                  Launch Platform
+                </h2>
               ) : (
                 <Link to="/dashboard">Go to dashboard</Link>
               )}
