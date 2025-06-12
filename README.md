@@ -1,5 +1,3 @@
-#We're not disrupting ticketing. We're deleting it.
-
 # 🎟️ MetaTicket — The Future of Web3 Ticketing
 
 MetaTicket is a next-gen Web3 ticketing platform that empowers event organizers and attendees to **own**, **trade**, and **earn** from digital tickets using blockchain technology.
