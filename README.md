@@ -1,54 +1,49 @@
-# React + TypeScript + Vite
+# 🎟️ MetaTicket — The Future of Web3 Ticketing
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+MetaTicket is a next-gen Web3 ticketing platform that empowers event organizers and attendees to **own**, **trade**, and **earn** from digital tickets using blockchain technology.
 
-Currently, two official plugins are available:
+> ✅ Own your events  
+> 💰 Earn rewards from ticket trades  
+> 🔐 Eliminate fraud and resale scams  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🧩 Powered by Civic
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+MetaTicket uses **[Civic Auth](https://www.civic.com/)** for seamless Web3 authentication and embedded wallets on Solana.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+> Leverage a simple, flexible, and fast way to integrate authentication into your applications with Civic Auth. Enable familiar sign-in options, offer embedded wallets, and unlock blockchain benefits for your users. You can get Auth up and running in just 5 minutes!
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+🔐 **Civic Auth Integration:**
+- Familiar login experience (google auth)
+- Secure and decentralized identity handling
+- Embedded **Solana wallet** with no extension required
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## 🚀 Features
+
+- 🔐 **User Authentication** via Civic Auth
+- 🪙 **Embedded Wallet** powered by Civic
+- 🎫 **NFT Ticketing**: Create and buy blockchain-based tickets
+- 🔄 **Transferable Tickets** with blockchain verification
+- 🧾 **MVP Ready**: Built for hackathon demo with core flows implemented
+
+---
+
+## 🧰 Tech Stack
+
+- **Frontend:** Next.js, TypeScript, Tailwind CSS
+- **Blockchain:** Solana
+- **Auth & Wallet:** [Civic](https://www.civic.com/)
+- **Wallet Library:** Civic Auth SDK (Embedded Solana Wallet)
+- **Database:** Firebase
+
+---
+
+## 🛠️ Getting Started
+
+### Clone the Repo
+```bash
+git clone https://github.com/yourusername/metaticket.git
+cd metaticket
