@@ -1,7 +1,5 @@
-//@ts-nocheck
 import { useState } from "react";
 import {
-  Plus,
   Calendar,
   MapPin,
   DollarSign,
@@ -15,10 +13,9 @@ import {
   Search,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { events } from "./eventsData";
+import ManageEventsHeader from "./components/Header";
 
 const ManageEvents = () => {
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [buyerSearchTerm, setBuyerSearchTerm] = useState("");
@@ -76,147 +73,147 @@ const ManageEvents = () => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    setShowCreateModal(false);
-    setFormData({
-      title: "",
-      date: "",
-      venue: "",
-      capacity: "",
-      currency: "USD",
-      price: "",
-      priceUSD: "",
-      priceSOL: "",
-    });
-  };
+  // const handleSubmit = (e: any) => {
+  //   e.preventDefault();
+  //   setShowCreateModal(false);
+  //   setFormData({
+  //     title: "",
+  //     date: "",
+  //     venue: "",
+  //     capacity: "",
+  //     currency: "USD",
+  //     price: "",
+  //     priceUSD: "",
+  //     priceSOL: "",
+  //   });
+  // };
 
-  const CreateEventModal = () => {
-    return (
-      showCreateModal && (
-        <motion.div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-          onClick={() => setShowCreateModal(false)}
-        >
-          <div
-            className="bg-gray-900/95 backdrop-blur-sm border border-white/20 rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <form className="text-2xl space-y-4 font-bold text-white">
-                {/* Image Upload */}
-                <div className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center">
-                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-300">Drop your image here</p>
-                </div>
+  // const CreateEventModal = () => {
+  //   return (
+  //     showCreateModal && (
+  //       <motion.div
+  //         className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+  //         onClick={() => setShowCreateModal(false)}
+  //       >
+  //         <div
+  //           className="bg-gray-900/95 backdrop-blur-sm border border-white/20 rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+  //           onClick={(e) => e.stopPropagation()}
+  //         >
+  //           <div className="flex items-center justify-between mb-6">
+  //             <form className="text-2xl space-y-4 font-bold text-white">
+  //               {/* Image Upload */}
+  //               <div className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center">
+  //                 <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+  //                 <p className="text-gray-300">Drop your image here</p>
+  //               </div>
 
-                {/* Basic Info */}
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="Event title"
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="venue"
-                    value={formData.venue}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="Venue"
-                    required
-                  />
-                </div>
+  //               {/* Basic Info */}
+  //               <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+  //                 <input
+  //                   type="text"
+  //                   name="title"
+  //                   value={formData.title}
+  //                   onChange={handleInputChange}
+  //                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+  //                   placeholder="Event title"
+  //                   required
+  //                 />
+  //                 <input
+  //                   type="text"
+  //                   name="venue"
+  //                   value={formData.venue}
+  //                   onChange={handleInputChange}
+  //                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+  //                   placeholder="Venue"
+  //                   required
+  //                 />
+  //               </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <input
-                    type="date"
-                    name="date"
-                    value={formData.date}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    required
-                  />
-                  <input
-                    type="number"
-                    name="capacity"
-                    value={formData.capacity}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="Capacity"
-                    required
-                  />
-                  <select
-                    name="currency"
-                    value={formData.currency}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  >
-                    <option value="USD">USD ($)</option>
-                    <option value="SOL">SOL (◎)</option>
-                  </select>
-                </div>
+  //               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+  //                 <input
+  //                   type="date"
+  //                   name="date"
+  //                   value={formData.date}
+  //                   onChange={handleInputChange}
+  //                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+  //                   required
+  //                 />
+  //                 <input
+  //                   type="number"
+  //                   name="capacity"
+  //                   value={formData.capacity}
+  //                   onChange={handleInputChange}
+  //                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+  //                   placeholder="Capacity"
+  //                   required
+  //                 />
+  //                 <select
+  //                   name="currency"
+  //                   value={formData.currency}
+  //                   onChange={handleInputChange}
+  //                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+  //                 >
+  //                   <option value="USD">USD ($)</option>
+  //                   <option value="SOL">SOL (◎)</option>
+  //                 </select>
+  //               </div>
 
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  step="0.01"
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  placeholder={`Price in ${formData.currency}`}
-                  required
-                />
+  //               <input
+  //                 type="number"
+  //                 name="price"
+  //                 value={formData.price}
+  //                 onChange={handleInputChange}
+  //                 step="0.01"
+  //                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+  //                 placeholder={`Price in ${formData.currency}`}
+  //                 required
+  //               />
 
-                {/* Price Conversion - Fixed height to prevent jumping */}
-                <div className="min-h-[80px]">
-                  {formData.priceUSD && formData.priceSOL && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="p-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-white/10 rounded-xl"
-                    >
-                      <div className="flex justify-between">
-                        <span className="text-white">
-                          USD: ${formData.priceUSD}
-                        </span>
-                        <span className="text-white">
-                          SOL: {formData.priceSOL} ◎
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-400 mt-2">
-                        Rate: 1 SOL = ${SOL_TO_USD}
-                      </p>
-                    </motion.div>
-                  )}
-                </div>
+  //               {/* Price Conversion - Fixed height to prevent jumping */}
+  //               <div className="min-h-[80px]">
+  //                 {formData.priceUSD && formData.priceSOL && (
+  //                   <motion.div
+  //                     initial={{ opacity: 0 }}
+  //                     animate={{ opacity: 1 }}
+  //                     className="p-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-white/10 rounded-xl"
+  //                   >
+  //                     <div className="flex justify-between">
+  //                       <span className="text-white">
+  //                         USD: ${formData.priceUSD}
+  //                       </span>
+  //                       <span className="text-white">
+  //                         SOL: {formData.priceSOL} ◎
+  //                       </span>
+  //                     </div>
+  //                     <p className="text-xs text-gray-400 mt-2">
+  //                       Rate: 1 SOL = ${SOL_TO_USD}
+  //                     </p>
+  //                   </motion.div>
+  //                 )}
+  //               </div>
 
-                <div className="flex justify-end space-x-4 pt-6">
-                  <button
-                    type="button"
-                    onClick={() => setShowCreateModal(false)}
-                    className="px-6 py-3 border border-white/20 rounded-xl text-gray-300 hover:bg-white/10"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white font-semibold"
-                  >
-                    Create Event
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </motion.div>
-      )
-    );
-  };
+  //               <div className="flex justify-end space-x-4 pt-6">
+  //                 <button
+  //                   type="button"
+  //                   onClick={() => setShowCreateModal(false)}
+  //                   className="px-6 py-3 border border-white/20 rounded-xl text-gray-300 hover:bg-white/10"
+  //                 >
+  //                   Cancel
+  //                 </button>
+  //                 <button
+  //                   type="submit"
+  //                   className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white font-semibold"
+  //                 >
+  //                   Create Event
+  //                 </button>
+  //               </div>
+  //             </form>
+  //           </div>
+  //         </div>
+  //       </motion.div>
+  //     )
+  //   );
+  // };
   // added
 
   const BuyersModal = () => {
@@ -416,7 +413,7 @@ const ManageEvents = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center justify-between mb-8"
@@ -433,14 +430,14 @@ const ManageEvents = () => {
             </div>
           </div>
           <button
-            onClick={() => setShowCreateModal(true)}
+            // onClick={() => setShowCreateModal(true)}
             className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white font-semibold hover:from-purple-600 hover:to-pink-600 transition-all"
           >
             <Plus className="w-5 h-5" />
             <span>Create Event</span>
           </button>
-        </motion.div>
-
+        </motion.div> */}
+        <ManageEventsHeader />
         {/* Search */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -546,7 +543,7 @@ const ManageEvents = () => {
                     <span>Edit</span>
                   </button>
                   <button
-                    onClick={() => setSelectedEvent(event)}
+                    // onClick={() => setSelectedEvent(event)}
                     className="flex-1 py-2 px-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white hover:from-purple-600 hover:to-pink-600 transition-all flex items-center justify-center space-x-2"
                   >
                     <Users className="w-4 h-4" />
@@ -557,8 +554,6 @@ const ManageEvents = () => {
             </motion.div>
           ))}
         </div>
-
-        <CreateEventModal />
         <BuyersModal />
       </div>
     </div>
