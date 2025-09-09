@@ -37,7 +37,7 @@ interface Event {
 
 export default function Discover() {
   const { events, loading, error } = useEvents();
-
+  console.log("events data: ", events);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -286,33 +286,9 @@ export default function Discover() {
                         <div className="flex items-center text-gray-300">
                           <Users className="w-4 h-4 mr-3 text-cyan-400" />
                           <span className="text-sm">
-                            {event.sold || 0}/{event.capacity} attending
+                            Up to {event.capacity} guests
                           </span>
                         </div>
-                      </div>
-
-                      {/* Attendance bar */}
-                      <div className="mb-6">
-                        <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-700"
-                            style={{
-                              width: `${
-                                event.capacity > 0
-                                  ? ((event.sold || 0) / event.capacity) * 100
-                                  : 0
-                              }%`,
-                            }}
-                          />
-                        </div>
-                        <p className="text-xs text-gray-400 mt-2">
-                          {event.capacity > 0
-                            ? Math.round(
-                                ((event.sold || 0) / event.capacity) * 100
-                              )
-                            : 0}
-                          % full
-                        </p>
                       </div>
 
                       {/* Price and CTA */}
@@ -328,7 +304,7 @@ export default function Discover() {
                           onClick={() => openModal(event)}
                           className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 flex items-center space-x-2 shadow-lg hover:shadow-purple-500/25"
                         >
-                          <span>Enter</span>
+                          <span>Get Ticket</span>
                           <ArrowRight className="w-4 h-4" />
                         </button>
                       </div>
