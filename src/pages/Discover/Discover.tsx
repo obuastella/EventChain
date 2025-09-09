@@ -1,29 +1,95 @@
-import { useState } from "react";
-import { Search, Calendar, MapPin, Users } from "lucide-react";
-import { eventsData } from "./eventsData";
+import { useState, useRef, useEffect } from "react";
+import {
+  Search,
+  Calendar,
+  MapPin,
+  Users,
+  Sparkles,
+  Zap,
+  ArrowRight,
+  Filter,
+  Globe,
+} from "lucide-react";
+import { useEvents } from "../../hooks/useEvents";
+import ErrorEvents from "./components/ErrorEvents";
+import Loader from "../../shared/Loader";
 import PurchaseTicket from "./modals/PurchaseTicket";
 
-export default function Discover() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredEvents, setFilteredEvents] = useState(eventsData);
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+// Define the event type based on your Firestore structure
+interface Event {
+  id: string;
+  title: string;
+  venue: string;
+  date: string;
+  capacity: number;
+  ticketType: "free" | "paid";
+  priceUSD?: string;
+  image: string;
+  creator: string;
+  userId: string;
+  email: string;
+  buyers: string[];
+  sold: number;
+  status: string;
+  createdAt: Date;
+}
 
-  const handleSearch = (term: any) => {
-    setSearchTerm(term);
-    if (term.trim() === "") {
-      setFilteredEvents(eventsData);
-    } else {
-      const filtered = eventsData.filter(
-        (event: any) =>
-          event.name.toLowerCase().includes(term.toLowerCase()) ||
-          event.location.toLowerCase().includes(term.toLowerCase())
-      );
-      setFilteredEvents(filtered);
+export default function Discover() {
+  const { events, loading, error } = useEvents();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCategory] = useState("All");
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  // Update filtered events when events data changes
+  useEffect(() => {
+    if (events) {
+      setFilteredEvents(events);
     }
+  }, [events]);
+
+  // Track mouse for gradient effect
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    filterEvents(term, selectedCategory);
   };
 
-  const openModal = (event: any) => {
+  const filterEvents = (searchTerm: string, category: string) => {
+    if (!events) return;
+
+    let filtered = events;
+
+    if (searchTerm.trim() !== "") {
+      filtered = filtered.filter(
+        (event) =>
+          event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          event.venue.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          event.creator.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // For now, we don't have categories in Firestore, so we'll skip category filtering
+    // You can add a category field to your events later
+    if (category !== "All") {
+      // filtered = filtered.filter((event) => event.category === category);
+    }
+
+    setFilteredEvents(filtered);
+  };
+
+  const openModal = (event: Event) => {
     setSelectedEvent(event);
     setIsModalOpen(true);
   };
@@ -33,101 +99,271 @@ export default function Discover() {
     setSelectedEvent(null);
   };
 
+  // Show loading state
+  if (loading) {
+    return <Loader />;
+  }
+
+  // Show error state
+  if (error) {
+    return <ErrorEvents />;
+  }
+
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
-        {/* Hero Section with Search */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-16">
-          <div className="max-w-6xl mx-auto px-4 text-center">
-            <h1 className="text-4xl font-bold mb-4">Discover Web3 Events</h1>
-            <p className="text-xl mb-8">
-              Find and purchase tickets using cryptocurrency
-            </p>
+      <div className="min-h-screen bg-gradient-to-br via-purple-950 from-slate-900 to-slate-900 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0">
+          <div
+            className="absolute w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
+            style={{
+              left: mousePosition.x / 10,
+              top: mousePosition.y / 10,
+              transition: "all 0.3s ease",
+            }}
+          />
+          <div className="absolute top-1/4 right-1/4 w-72 h-72 bg-pink-500/20 rounded-full blur-3xl animate-pulse" />
+          <div
+            className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl animate-bounce"
+            style={{ animationDuration: "3s" }}
+          />
+        </div>
 
-            {/* Search Bar */}
-            <div className="border rounded-lg border-foreground max-w-2xl mx-auto relative">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search events by name or location..."
-                  value={searchTerm}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 rounded-lg text-gray-900 text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+        {/* Floating particles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-white/30 rounded-full animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 2}s`,
+                animationDuration: `${2 + Math.random() * 3}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Hero Section */}
+        <div ref={heroRef} className="relative z-10 text-white py-24">
+          <div className="max-w-7xl mx-auto px-6 text-center">
+            {/* Brand Header */}
+            <div className="mb-8">
+              <div className="flex items-center justify-center mb-4">
+                <Sparkles
+                  className="w-8 h-8 text-purple-400 mr-3 animate-spin"
+                  style={{ animationDuration: "3s" }}
                 />
+                <h1 className="text-6xl font-black bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
+                  MetaTickets
+                </h1>
+                <Zap className="w-8 h-8 text-cyan-400 ml-3 animate-pulse" />
+              </div>
+              <p className="text-xl text-gray-300 font-medium tracking-wide">
+                We're not disrupting ticketing. We're deleting it.
+              </p>
+            </div>
+
+            {/* Main CTA */}
+            <div className="mb-12">
+              <h2 className="text-4xl font-bold mb-6 leading-tight">
+                Discover events that{" "}
+                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  break reality
+                </span>
+              </h2>
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                From NFT galleries to DeFi summits, find Web3 experiences that
+                push boundaries. Pay with crypto, own your tickets as NFTs.
+              </p>
+            </div>
+
+            {/* Enhanced Search Bar */}
+            <div className="max-w-3xl mx-auto relative mb-8">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-300" />
+                <div className="relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-2">
+                  <div className="flex items-center">
+                    <Search className="ml-4 w-6 h-6 text-purple-400" />
+                    <input
+                      type="text"
+                      placeholder="Search the metaverse..."
+                      value={searchTerm}
+                      onChange={(e) => handleSearch(e.target.value)}
+                      className="flex-1 px-4 py-4 bg-transparent text-white text-lg placeholder-gray-400 focus:outline-none"
+                    />
+                    <button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-semibold transition-all flex items-center space-x-2 mr-2">
+                      <span>Search</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Events Grid */}
-        <div className="max-w-6xl mx-auto px-4 py-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">
-            {searchTerm
-              ? `Search Results (${filteredEvents.length})`
-              : "Featured Events"}
-          </h2>
+        {/* Events Section */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pb-24">
+          {/* Section Header */}
+          <div className="flex items-center justify-between mb-12">
+            <div>
+              <h2 className="text-3xl font-bold text-white mb-2">
+                {searchTerm || selectedCategory !== "All"
+                  ? `Found ${filteredEvents.length} experiences`
+                  : "Featured Experiences"}
+              </h2>
+              <p className="text-gray-400">The future is happening now</p>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Filter className="w-5 h-5 text-gray-400" />
+              <Globe className="w-5 h-5 text-gray-400" />
+            </div>
+          </div>
 
+          {/* Events Grid */}
           {filteredEvents.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">
-                No events found matching your search.
+            <div className="text-center py-24">
+              <div className="w-24 h-24 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Search className="w-12 h-12 text-purple-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">
+                No events found
+              </h3>
+              <p className="text-gray-400 text-lg max-w-md mx-auto">
+                Try adjusting your search
               </p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredEvents.map((event: any) => (
+              {filteredEvents.map((event, index) => (
                 <div
                   key={event.id}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+                  className="group relative"
+                  style={{
+                    animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`,
+                  }}
                 >
-                  <img
-                    src={event.image}
-                    alt={event.name}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
-                      {event.name}
-                    </h3>
-                    <p className="text-gray-600 mb-4 text-sm">
-                      {event.description}
-                    </p>
+                  {/* Card glow effect */}
+                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-cyan-500/20 rounded-3xl blur opacity-0 group-hover:opacity-100 transition duration-500" />
 
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center text-gray-600">
-                        <Calendar className="w-4 h-4 mr-2" />
-                        <span className="text-sm">
-                          {event.date} at {event.time}
+                  <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:border-purple-500/30 transition-all duration-500">
+                    {/* Image */}
+                    <div className="relative h-56 overflow-hidden">
+                      <img
+                        src={event.image || "/images/default-event.jpg"}
+                        alt={event.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            "/images/default-event.jpg";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+                      {/* Creator badge */}
+                      <div className="absolute bottom-4 left-4">
+                        <span className="px-3 py-1 bg-purple-500/80 backdrop-blur-sm text-white text-xs font-medium rounded-full">
+                          by {event.creator}
                         </span>
                       </div>
-                      <div className="flex items-center text-gray-600">
-                        <MapPin className="w-4 h-4 mr-2" />
-                        <span className="text-sm">{event.location}</span>
-                      </div>
-                      <div className="flex items-center text-gray-600">
-                        <Users className="w-4 h-4 mr-2" />
-                        <span className="text-sm">
-                          {event.attendees}/{event.maxAttendees} attending
-                        </span>
-                      </div>
+
+                      {/* Status badge */}
+                      {event.status && (
+                        <div className="absolute top-4 right-4">
+                          <span
+                            className={`px-3 py-1 backdrop-blur-sm text-white text-xs font-medium rounded-full ${
+                              event.status === "active"
+                                ? "bg-green-500/80"
+                                : "bg-gray-500/80"
+                            }`}
+                          >
+                            {event.status}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="text-2xl font-bold text-blue-600">
-                          {event.price}
+                    <div className="p-6">
+                      {/* Title */}
+                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors">
+                        {event.title}
+                      </h3>
+
+                      {/* Description placeholder */}
+                      <p className="text-gray-400 mb-4 text-sm leading-relaxed">
+                        {event.ticketType === "free"
+                          ? "Join this free event and connect with the community"
+                          : "Premium event experience with exclusive benefits"}
+                      </p>
+
+                      {/* Event details */}
+                      <div className="space-y-3 mb-6">
+                        <div className="flex items-center text-gray-300">
+                          <Calendar className="w-4 h-4 mr-3 text-purple-400" />
+                          <span className="text-sm">
+                            {new Date(event.date).toLocaleDateString("en-US", {
+                              weekday: "short",
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </span>
                         </div>
-                        <div className="text-sm text-gray-500">
-                          {event.priceUSD}
+                        <div className="flex items-center text-gray-300">
+                          <MapPin className="w-4 h-4 mr-3 text-pink-400" />
+                          <span className="text-sm">{event.venue}</span>
+                        </div>
+                        <div className="flex items-center text-gray-300">
+                          <Users className="w-4 h-4 mr-3 text-cyan-400" />
+                          <span className="text-sm">
+                            {event.sold || 0}/{event.capacity} attending
+                          </span>
                         </div>
                       </div>
-                      <button
-                        onClick={() => openModal(event)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
-                      >
-                        Get Ticket
-                      </button>
+
+                      {/* Attendance bar */}
+                      <div className="mb-6">
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div
+                            className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-700"
+                            style={{
+                              width: `${
+                                event.capacity > 0
+                                  ? ((event.sold || 0) / event.capacity) * 100
+                                  : 0
+                              }%`,
+                            }}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-400 mt-2">
+                          {event.capacity > 0
+                            ? Math.round(
+                                ((event.sold || 0) / event.capacity) * 100
+                              )
+                            : 0}
+                          % full
+                        </p>
+                      </div>
+
+                      {/* Price and CTA */}
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                            {event.ticketType === "free"
+                              ? "Free"
+                              : `${event.priceUSD || "0.00"} SOL`}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => openModal(event)}
+                          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 flex items-center space-x-2 shadow-lg hover:shadow-purple-500/25"
+                        >
+                          <span>Enter</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -141,6 +377,19 @@ export default function Discover() {
           <PurchaseTicket onClose={closeModal} selectedEvent={selectedEvent} />
         )}
       </div>
+
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </>
   );
 }
