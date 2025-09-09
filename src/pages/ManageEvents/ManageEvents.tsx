@@ -2,14 +2,13 @@
 import { useState } from "react";
 import { Search, Plus, Loader2 } from "lucide-react";
 import { useEvents } from "../../hooks/useEvents";
-
-// Components
 import EventCard from "./components/EventCard";
 import NoResults from "./components/NoResults";
 import ManageEventsHeader from "./components/Header";
 import BuyersModal from "./components/BuyersModal";
 import CreateEventModal from "./components/CreateEventModal";
 import EditEventModal from "./components/EditEventModal";
+import { useUser } from "@civic/auth-web3/react";
 
 const ManageEvents = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -18,6 +17,7 @@ const ManageEvents = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState();
   // Use the custom hook
+  const { user } = useUser();
   const { events, loading, error } = useEvents();
 
   // Filter events based on search term
@@ -52,30 +52,6 @@ const ManageEvents = () => {
   const handleCloseEditModal = () => {
     setShowEditModal(false);
   };
-  // Handle event creation from the modal
-  // const handleEventCreated = async (eventData) => {
-  //   try {
-  //     await createEvent(eventData);
-  //     setShowCreateModal(false);
-  //     // No need to manually update state - the real-time listener will handle it
-  //   } catch (error) {
-  //     console.error("Failed to create event:", error);
-  //     // You might want to show a toast notification here
-  //     alert("Failed to create event. Please try again.");
-  //   }
-  // };
-
-  // Handle event update
-  // const handleEventUpdate = async (eventId, updateData) => {
-  //   try {
-  //     await updateEvent(eventId, updateData);
-  //     // Real-time listener will update the UI automatically
-  //   } catch (error) {
-  //     console.error("Failed to update event:", error);
-  //     alert("Failed to update event. Please try again.");
-  //   }
-  // };
-
   // Handle event deletion
   // const handleEventDelete = async (eventId) => {
   //   if (window.confirm("Are you sure you want to delete this event?")) {
@@ -133,26 +109,6 @@ const ManageEvents = () => {
       <div className="max-w-7xl mx-auto">
         <ManageEventsHeader />
 
-        {/* Stats Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Total Events</p>
-            <p className="text-2xl font-bold text-white">{events.length}</p>
-          </div>
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Free Events</p>
-            <p className="text-2xl font-bold text-blue-400">
-              {events.filter((e) => e.ticketType === "free").length}
-            </p>
-          </div>
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Paid Events</p>
-            <p className="text-2xl font-bold text-purple-400">
-              {events.filter((e) => e.ticketType === "paid").length}
-            </p>
-          </div>
-        </div>
-
         {/* Search and Create Button */}
         <div className="flex flex-wrap flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div className="relative w-full md:w-lg ">
@@ -197,7 +153,7 @@ const ManageEvents = () => {
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredEvents.map((event, index) => (
+            {/* {filteredEvents.map((event, index) => (
               <EventCard
                 key={event.id}
                 event={event}
@@ -206,7 +162,18 @@ const ManageEvents = () => {
                 onEdit={() => handleEditModal(event?.id)}
                 // onDelete={() => handleEventDelete(event.id)}
               />
-            ))}
+            ))} */}
+            {filteredEvents
+              .filter((event) => event.userId === user?.id)
+              .map((event, index) => (
+                <EventCard
+                  key={event.id}
+                  event={event}
+                  index={index}
+                  onViewBuyers={handleEventSelect}
+                  onEdit={() => handleEditModal(event?.id)}
+                />
+              ))}
           </div>
         )}
 

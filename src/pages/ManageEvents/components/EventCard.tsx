@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { Calendar, Edit, MapPin, Users } from "lucide-react";
 import { useTickets } from "../../../hooks/useTickets";
 
