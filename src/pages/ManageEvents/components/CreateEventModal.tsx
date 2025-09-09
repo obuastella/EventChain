@@ -5,7 +5,7 @@ import { useUser } from "@civic/auth-web3/react";
 import { serverTimestamp } from "firebase/firestore";
 import { useEvents } from "../../../hooks/useEvents";
 
-const CreateEventModal = ({ onClose }: any) => {
+const CreateEventModal = ({ onClose }) => {
   const { user } = useUser();
   const { createEvent } = useEvents();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -143,7 +143,7 @@ const CreateEventModal = ({ onClose }: any) => {
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               <option value="free">Free</option>
-              <option value="paid">Paid (SOL)</option>
+              {/* <option value="paid">Paid (SOL)</option> */}
             </select>
           </div>
 

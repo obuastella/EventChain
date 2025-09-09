@@ -1,4 +1,4 @@
-import { Ticket, TrendingUp, Users } from "lucide-react";
+import { Ticket, Users } from "lucide-react";
 
 export const stats = [
   {
@@ -8,13 +8,7 @@ export const stats = [
     color: "from-blue-500 to-cyan-500",
     bgColor: "bg-blue-500/20",
   },
-  {
-    label: "Total Spent",
-    value: "2.2 SOL",
-    icon: <TrendingUp className="w-5 h-5" />,
-    color: "from-green-500 to-emerald-500",
-    bgColor: "bg-green-500/20",
-  },
+
   {
     label: "Events Hosted",
     value: "1",

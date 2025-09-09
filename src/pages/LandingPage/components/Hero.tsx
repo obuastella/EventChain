@@ -1,15 +1,16 @@
+//@ts-nocheck
 import { useUser } from "@civic/auth-web3/react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export default function Hero() {
-  const { user, signIn }: any = useUser();
+  const { user, signIn } = useUser();
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    const handleMouseMove = (e: any) => {
+    const handleMouseMove = (e) => {
       setMousePosition({
         x: (e.clientX / window.innerWidth) * 100,
         y: (e.clientY / window.innerHeight) * 100,

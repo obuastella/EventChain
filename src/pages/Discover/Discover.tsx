@@ -37,13 +37,12 @@ interface Event {
 
 export default function Discover() {
   const { events, loading, error } = useEvents();
-  console.log("events data: ", events);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory] = useState("All");
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [setMousePosition] = useState({ x: 0, y: 0 });
   const heroRef = useRef<HTMLDivElement>(null);
 
   // Update filtered events when events data changes

@@ -6,7 +6,11 @@ import { userHasWallet } from "@civic/auth-web3";
 import { useSyncUserToFirestore } from "../../../helpers/useSyncUserToFirestore";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../../config/firebase";
-
+interface ExtendedUserContext {
+  solana?: {
+    address: string;
+  };
+}
 export default function Header() {
   useSyncUserToFirestore();
 
@@ -14,12 +18,55 @@ export default function Header() {
   const userContext = useUser();
   const walletCreatedRef = useRef(false);
 
+  // useEffect(() => {
+  //   async function checkOrCreateWallet() {
+  //     if (walletCreatedRef.current) return;
+  //     if (!userContext || !userContext.user) return;
+
+  //     // If no wallet, create one
+  //     if (!userHasWallet(userContext)) {
+  //       try {
+  //         walletCreatedRef.current = true;
+  //         console.log("User has no wallet, creating one...");
+  //         await userContext.createWallet();
+  //         console.log("Wallet created!");
+
+  //         // 🔥 Update Firestore with the new wallet
+  //         if (userContext?.solana?.address) {
+  //           const userRef = doc(db, "users", userContext.user.id);
+  //           await updateDoc(userRef, {
+  //             wallet: userContext.solana.address,
+  //           });
+  //           console.log(
+  //             "Firestore updated with wallet:",
+  //             userContext.solana.address
+  //           );
+  //         }
+  //       } catch (error) {
+  //         console.error("Failed to create wallet:", error);
+  //         walletCreatedRef.current = false;
+  //       }
+  //     } else {
+  //       console.log("User already has a wallet:", userContext.solana.address);
+
+  //       // 🔥 Ensure Firestore has the wallet address too
+  //       if (userContext.solana?.address) {
+  //         const userRef = doc(db, "users", userContext.user.id);
+  //         await updateDoc(userRef, {
+  //           wallet: userContext.solana.address,
+  //         });
+  //         console.log("Firestore synced wallet:", userContext.solana.address);
+  //       }
+  //     }
+  //   }
+
+  //   checkOrCreateWallet();
+  // }, [userContext?.user?.id, userContext?.solana?.address]);
   useEffect(() => {
     async function checkOrCreateWallet() {
       if (walletCreatedRef.current) return;
       if (!userContext || !userContext.user) return;
 
-      // If no wallet, create one
       if (!userHasWallet(userContext)) {
         try {
           walletCreatedRef.current = true;
@@ -27,38 +74,29 @@ export default function Header() {
           await userContext.createWallet();
           console.log("Wallet created!");
 
+          // Type assertion to access solana property
+          const extendedContext = userContext as ExtendedUserContext;
+
           // 🔥 Update Firestore with the new wallet
-          if (userContext?.solana?.address) {
+          if (extendedContext?.solana?.address) {
             const userRef = doc(db, "users", userContext.user.id);
             await updateDoc(userRef, {
-              wallet: userContext.solana.address,
+              wallet: extendedContext.solana.address,
             });
             console.log(
               "Firestore updated with wallet:",
-              userContext.solana.address
+              extendedContext.solana.address
             );
           }
         } catch (error) {
           console.error("Failed to create wallet:", error);
           walletCreatedRef.current = false;
         }
-      } else {
-        console.log("User already has a wallet:", userContext.solana.address);
-
-        // 🔥 Ensure Firestore has the wallet address too
-        if (userContext.solana?.address) {
-          const userRef = doc(db, "users", userContext.user.id);
-          await updateDoc(userRef, {
-            wallet: userContext.solana.address,
-          });
-          console.log("Firestore synced wallet:", userContext.solana.address);
-        }
       }
     }
 
     checkOrCreateWallet();
-  }, [userContext?.user?.id, userContext?.solana?.address]);
-
+  }, [userContext]);
   return (
     <motion.section
       className="rounded-sm relative p-6 md:p-8 flex items-start gap-4 w-full h-32 overflow-hidden"

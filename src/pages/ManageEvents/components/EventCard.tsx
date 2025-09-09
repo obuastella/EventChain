@@ -2,7 +2,9 @@
 import { Calendar, Edit, MapPin, Users } from "lucide-react";
 import { useTickets } from "../../../hooks/useTickets";
 
-const EventCard = ({ event, index, onViewBuyers }: any) => {
+const EventCard = ({ event, index, onViewBuyers, onEdit }) => {
+  console.log(index);
+
   const eventId = event?.id;
   const ticketsData = useTickets(eventId);
 
@@ -93,7 +95,10 @@ const EventCard = ({ event, index, onViewBuyers }: any) => {
                   : "bg-gradient-to-r from-purple-500 to-pink-500"
               }`}
               style={{
-                width: `${Math.min((event.sold / event.capacity) * 100, 100)}%`,
+                width: `${Math.min(
+                  (ticketsData.tickets.length / event.capacity) * 100,
+                  100
+                )}%`,
               }}
             />
           </div>
@@ -101,7 +106,10 @@ const EventCard = ({ event, index, onViewBuyers }: any) => {
 
         {/* Action Buttons */}
         <div className="mt-14 flex space-x-2">
-          <button className="flex-1 py-2 px-4 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors flex items-center justify-center space-x-2">
+          <button
+            onClick={onEdit}
+            className="flex-1 py-2 px-4 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors flex items-center justify-center space-x-2"
+          >
             <span>
               <Edit size={18} />
             </span>

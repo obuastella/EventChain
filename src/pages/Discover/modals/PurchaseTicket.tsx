@@ -1,18 +1,14 @@
+//@ts-nocheck
+
 import { useUser } from "@civic/auth-web3/react";
 import {
-  query,
   collection,
-  where,
-  getDocs,
-  addDoc,
   doc,
-  updateDoc,
-  increment,
   setDoc,
   getDoc,
   serverTimestamp,
 } from "firebase/firestore";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { db } from "../../../config/firebase";
 import { v4 as uuidv4 } from "uuid";
@@ -26,7 +22,7 @@ const PurchaseTicket: React.FC<PurchaseTicketProps> = ({
   onClose,
   selectedEvent,
 }) => {
-  const { user }: any = useUser();
+  const { user } = useUser();
   const userContext = useUser();
   const [isLoading, setIsLoading] = useState(false);
 

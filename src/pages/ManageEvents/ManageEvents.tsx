@@ -16,8 +16,7 @@ const ManageEvents = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Use the custom hook
-  const { events, loading, error, createEvent, updateEvent, deleteEvent } =
-    useEvents();
+  const { events, loading, error } = useEvents();
 
   // Filter events based on search term
   const filteredEvents = events.filter(
@@ -44,41 +43,41 @@ const ManageEvents = () => {
   };
 
   // Handle event creation from the modal
-  const handleEventCreated = async (eventData) => {
-    try {
-      await createEvent(eventData);
-      setShowCreateModal(false);
-      // No need to manually update state - the real-time listener will handle it
-    } catch (error) {
-      console.error("Failed to create event:", error);
-      // You might want to show a toast notification here
-      alert("Failed to create event. Please try again.");
-    }
-  };
+  // const handleEventCreated = async (eventData) => {
+  //   try {
+  //     await createEvent(eventData);
+  //     setShowCreateModal(false);
+  //     // No need to manually update state - the real-time listener will handle it
+  //   } catch (error) {
+  //     console.error("Failed to create event:", error);
+  //     // You might want to show a toast notification here
+  //     alert("Failed to create event. Please try again.");
+  //   }
+  // };
 
   // Handle event update
-  const handleEventUpdate = async (eventId, updateData) => {
-    try {
-      await updateEvent(eventId, updateData);
-      // Real-time listener will update the UI automatically
-    } catch (error) {
-      console.error("Failed to update event:", error);
-      alert("Failed to update event. Please try again.");
-    }
-  };
+  // const handleEventUpdate = async (eventId, updateData) => {
+  //   try {
+  //     await updateEvent(eventId, updateData);
+  //     // Real-time listener will update the UI automatically
+  //   } catch (error) {
+  //     console.error("Failed to update event:", error);
+  //     alert("Failed to update event. Please try again.");
+  //   }
+  // };
 
   // Handle event deletion
-  const handleEventDelete = async (eventId) => {
-    if (window.confirm("Are you sure you want to delete this event?")) {
-      try {
-        await deleteEvent(eventId);
-        // Real-time listener will update the UI automatically
-      } catch (error) {
-        console.error("Failed to delete event:", error);
-        alert("Failed to delete event. Please try again.");
-      }
-    }
-  };
+  // const handleEventDelete = async (eventId) => {
+  //   if (window.confirm("Are you sure you want to delete this event?")) {
+  //     try {
+  //       await deleteEvent(eventId);
+  //       // Real-time listener will update the UI automatically
+  //     } catch (error) {
+  //       console.error("Failed to delete event:", error);
+  //       alert("Failed to delete event. Please try again.");
+  //     }
+  //   }
+  // };
 
   // Loading state
   if (loading) {
@@ -184,7 +183,7 @@ const ManageEvents = () => {
         {filteredEvents.length === 0 ? (
           <NoResults
             searchTerm={searchTerm}
-            onCreateEvent={handleCreateEvent}
+            // onCreateEvent={handleCreateEvent}
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -195,7 +194,7 @@ const ManageEvents = () => {
                 index={index}
                 onViewBuyers={handleEventSelect}
                 onEdit={(event) => console.log("Edit event:", event.id)}
-                onDelete={() => handleEventDelete(event.id)}
+                // onDelete={() => handleEventDelete(event.id)}
               />
             ))}
           </div>
@@ -212,7 +211,7 @@ const ManageEvents = () => {
         {showCreateModal && (
           <CreateEventModal
             onClose={handleCloseCreateModal}
-            onEventCreated={handleEventCreated}
+            // onEventCreated={handleEventCreated}
           />
         )}
       </div>
