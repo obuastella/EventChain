@@ -36,7 +36,7 @@ const Dashboard = () => {
     },
   ];
 
-  const handleNav = (path: any) => {
+  const handleNav = (path) => {
     navigate(path);
   };
   return (

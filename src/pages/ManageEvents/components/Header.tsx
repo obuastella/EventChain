@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Calendar, Plus } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { useState } from "react";
 import CreateEventModal from "./CreateEventModal";
 
@@ -24,13 +24,13 @@ export default function ManageEventsHeader() {
           <p className="text-gray-400">Create and manage your Web3 events</p>
         </div>
       </div>
-      <button
+      {/* <button
         onClick={() => setShowCreateModal(true)}
         className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white font-semibold hover:from-purple-600 hover:to-pink-600 transition-all"
       >
         <Plus className="w-5 h-5" />
         <span>Create Event</span>
-      </button>
+      </button> */}
       {showCreateModal && <CreateEventModal onClose={handleCloseModal} />}
     </motion.div>
   );

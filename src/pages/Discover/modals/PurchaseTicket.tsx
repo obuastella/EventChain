@@ -10,6 +10,7 @@ import {
   increment,
   setDoc,
   getDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -72,7 +73,7 @@ const PurchaseTicket: React.FC<PurchaseTicketProps> = ({
       venue: selectedEvent.venue,
       eventImage: selectedEvent.image,
       ticketType: selectedEvent.ticketType,
-      purchasedAt: new Date(),
+      purchasedAt: serverTimestamp(),
       status: "active",
       nonce: uuidv4(),
     };

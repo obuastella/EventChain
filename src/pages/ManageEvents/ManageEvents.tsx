@@ -1,6 +1,7 @@
+//ts-nocheck
 import { useState } from "react";
 import { Search, Plus, Loader2 } from "lucide-react";
-import { useEvents } from "../../hooks/useEvents"; // Adjust path as needed
+import { useEvents } from "../../hooks/useEvents";
 
 // Components
 import EventCard from "./components/EventCard";
@@ -144,9 +145,9 @@ const ManageEvents = () => {
         </div>
 
         {/* Search and Create Button */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <div className="flex flex-wrap flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div className="relative w-full md:w-lg ">
+            <Search className="absolute z-40 left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
               placeholder="Search events, venues, or creators..."

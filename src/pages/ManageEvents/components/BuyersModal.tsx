@@ -1,7 +1,12 @@
 import { useState } from "react";
+import { useTickets } from "../../../hooks/useTickets";
+import { formatTimestamp } from "../../../utils/dateHelper";
 
 // BuyersModal Component
 const BuyersModal = ({ event, isOpen, onClose }) => {
+  const eventId = event?.id;
+  const ticketsData = useTickets(eventId);
+  console.log("Tickets data: ", ticketsData.tickets);
   const [buyerSearchTerm, setBuyerSearchTerm] = useState("");
 
   if (!event || !isOpen) return null;
@@ -9,10 +14,10 @@ const BuyersModal = ({ event, isOpen, onClose }) => {
   const isFreeEvent =
     event.ticketType === "free" || parseFloat(event.priceUSD) === 0;
 
-  const filteredBuyers = event.buyers.filter(
+  const filteredBuyers = ticketsData.tickets.filter(
     (buyer) =>
-      buyer.name.toLowerCase().includes(buyerSearchTerm.toLowerCase()) ||
-      buyer.wallet.toLowerCase().includes(buyerSearchTerm.toLowerCase())
+      buyer?.userName.toLowerCase().includes(buyerSearchTerm.toLowerCase()) ||
+      buyer?.wallet.toLowerCase().includes(buyerSearchTerm.toLowerCase())
   );
 
   const handleClose = () => {
@@ -63,7 +68,9 @@ const BuyersModal = ({ event, isOpen, onClose }) => {
                 <p className="text-gray-300 text-sm">
                   {isFreeEvent ? "Total Registered" : "Total Sales"}
                 </p>
-                <p className="text-xl font-bold text-white">{event.sold}</p>
+                <p className="text-xl font-bold text-white">
+                  {ticketsData.tickets.length}
+                </p>
               </div>
               <span className="text-2xl">📈</span>
             </div>
@@ -94,7 +101,7 @@ const BuyersModal = ({ event, isOpen, onClose }) => {
               <div>
                 <p className="text-gray-300 text-sm">Remaining</p>
                 <p className="text-xl font-bold text-white">
-                  {event.capacity - event.sold}
+                  {event.capacity - ticketsData.tickets.length}
                 </p>
               </div>
               <span className="text-2xl">🎫</span>
@@ -136,7 +143,7 @@ const BuyersModal = ({ event, isOpen, onClose }) => {
 
           {filteredBuyers.length === 0 ? (
             <div className="p-8 text-center">
-              <span className="text-4xl mb-4 block">👥</span>
+              <span className="text-4xl mb-4 block"></span>
               <p className="text-gray-400">
                 {buyerSearchTerm
                   ? `No ${
@@ -170,41 +177,42 @@ const BuyersModal = ({ event, isOpen, onClose }) => {
                       <td className="p-4">
                         <div className="flex items-center space-x-3">
                           <div
-                            className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            className={`w-10 py-3 px-4 md:h-10  rounded-full flex items-center justify-center ${
                               isFreeEvent
                                 ? "bg-gradient-to-r from-blue-500 to-cyan-500"
                                 : "bg-gradient-to-r from-purple-500 to-pink-500"
                             }`}
                           >
-                            <span className="text-white font-semibold text-sm">
-                              {buyer.name
+                            <span className="text-white font-semibold text-xs md:text-sm">
+                              {buyer?.userName
                                 .split(" ")
                                 .map((n) => n[0])
                                 .join("")}
                             </span>
                           </div>
-                          <span className="text-white">{buyer.name}</span>
+                          <span className="text-white ">{buyer?.userName}</span>
                         </div>
                       </td>
                       <td className="p-4">
                         <div className="flex items-center space-x-2">
                           <span className="text-gray-300 font-mono text-sm">
-                            {buyer.wallet}
-                          </span>
-                          <span className="text-gray-400 hover:text-white cursor-pointer">
-                            🔗
+                            {buyer?.wallet}
                           </span>
                         </div>
                       </td>
-                      <td className="p-4 text-white">{buyer.tickets}</td>
+                      <td className="p-4 text-white">1</td>
                       <td
                         className={`p-4 ${
                           isFreeEvent ? "text-blue-400" : "text-green-400"
                         }`}
                       >
-                        {buyer.amount}
+                        Free
                       </td>
-                      <td className="p-4 text-gray-300">{buyer.date}</td>
+                      <td className="p-4 text-gray-300">
+                        {buyer?.purchasedAt
+                          ? formatTimestamp(buyer.purchasedAt)
+                          : "N/A"}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

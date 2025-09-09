@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useState, useRef, useEffect } from "react";
 import {
   Search,
@@ -111,42 +112,10 @@ export default function Discover() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br via-purple-950 from-slate-900 to-slate-900 relative overflow-hidden">
-        {/* Animated background elements */}
-        <div className="absolute inset-0">
-          <div
-            className="absolute w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
-            style={{
-              left: mousePosition.x / 10,
-              top: mousePosition.y / 10,
-              transition: "all 0.3s ease",
-            }}
-          />
-          <div className="absolute top-1/4 right-1/4 w-72 h-72 bg-pink-500/20 rounded-full blur-3xl animate-pulse" />
-          <div
-            className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl animate-bounce"
-            style={{ animationDuration: "3s" }}
-          />
-        </div>
-
-        {/* Floating particles */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-white/30 rounded-full animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${2 + Math.random() * 3}s`,
-              }}
-            />
-          ))}
-        </div>
-
+      {/* <div className="min-h-screen bg-gradient-to-br via-purple-950 from-slate-900 to-slate-900 relative overflow-hidden"> */}
+      <div className="min-h-screenp-4 md:p-8 relative overflow-hidden">
         {/* Hero Section */}
-        <div ref={heroRef} className="relative z-10 text-white py-24">
+        <div ref={heroRef} className="relative z-10 text-white pt-2 pb-14">
           <div className="max-w-7xl mx-auto px-6 text-center">
             {/* Brand Header */}
             <div className="mb-8">
@@ -203,7 +172,6 @@ export default function Discover() {
             </div>
           </div>
         </div>
-
         {/* Events Section */}
         <div className="relative z-10 max-w-7xl mx-auto px-6 pb-24">
           {/* Section Header */}
@@ -371,25 +339,11 @@ export default function Discover() {
             </div>
           )}
         </div>
-
         {/* Purchase Modal */}
         {isModalOpen && selectedEvent && (
           <PurchaseTicket onClose={closeModal} selectedEvent={selectedEvent} />
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </>
   );
 }

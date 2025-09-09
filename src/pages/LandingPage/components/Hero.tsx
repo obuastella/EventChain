@@ -145,7 +145,7 @@ export default function Hero() {
                   Launch Platform
                 </h2>
               ) : (
-                <Link to="/dashboard">Go to dashboard</Link>
+                <Link to="/discover">Go to dashboard</Link>
               )}
             </motion.button>
 

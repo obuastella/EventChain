@@ -8,7 +8,7 @@ export function useSyncUserToFirestore() {
 
   useEffect(() => {
     const syncUser = async () => {
-      console.log("user store", user);
+      //   console.log("user store", user);
       if (!user) return;
 
       const userRef = doc(db, "users", user.id);
@@ -19,12 +19,12 @@ export function useSyncUserToFirestore() {
           id: user.id,
           name: user.name || "",
           email: user.email || "",
-          wallet: user.walletAddress || "", // Civic provides a Solana wallet
+          wallet: user.walletAddress || "",
           createdAt: new Date(),
         });
-        console.log("✅ User created in Firestore:", user.id);
+        // console.log("✅ User created in Firestore:", user.id);
       } else {
-        console.log("ℹ️ User already exists:", user.id);
+        // console.log("ℹ️ User already exists:", user.id);
       }
     };
 

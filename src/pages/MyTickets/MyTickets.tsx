@@ -3,18 +3,25 @@ import { motion } from "framer-motion";
 import {
   MoreVertical,
   ExternalLink,
-  Calendar,
   Hash,
-  DollarSign,
   Ticket,
   Search,
+  Loader2,
 } from "lucide-react";
-import { tickets } from "./ticketsData";
 import Header from "./components/Header";
 import { toast } from "react-toastify";
+import { useUser } from "@civic/auth-web3/react";
+import { useMyTickets } from "../../hooks/useMyTickets";
+import { formatTimestamp } from "../../utils/dateHelper";
 
 const MyTickets = () => {
+  const { user } = useUser();
+  // console.log(user);
+  const userId = user?.id;
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Use the custom hook to fetch tickets from Firestore
+  const { tickets, loading } = useMyTickets(userId);
 
   const ActionMenu = ({ ticket }: any) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -51,12 +58,14 @@ const MyTickets = () => {
       </div>
     );
   };
+
   const handleExplorer = (ticket: any) => {
     console.log(ticket);
     toast.warning(
       "🥺 We are so sorry we are currently working on this feature!"
     );
   };
+
   const StatusBadge = ({ status }: any) => {
     const statusConfig: any = {
       confirmed: {
@@ -68,6 +77,16 @@ const MyTickets = () => {
         bg: "bg-yellow-500/20",
         text: "text-yellow-400",
         border: "border-yellow-500/30",
+      },
+      active: {
+        bg: "bg-blue-500/20",
+        text: "text-blue-400",
+        border: "border-blue-500/30",
+      },
+      expired: {
+        bg: "bg-gray-500/20",
+        text: "text-gray-400",
+        border: "border-gray-500/30",
       },
     };
 
@@ -84,14 +103,39 @@ const MyTickets = () => {
 
   const filteredTickets = tickets.filter(
     (ticket: any) =>
-      ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ticket.venue.toLowerCase().includes(searchTerm.toLowerCase())
+      ticket.eventTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ticket.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ticket.venue?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ticket.eventName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4 md:p-8">
+        <div className="max-w-7xl mx-auto">
+          <Header />
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <Loader2 className="w-12 h-12 text-purple-400 animate-spin mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">
+                Loading your tickets...
+              </h3>
+              <p className="text-gray-400">
+                Please wait while we fetch your tickets
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <Header />
+
         {/* Search and Filter */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -138,15 +182,15 @@ const MyTickets = () => {
                   <th className="text-left p-6 text-gray-300 font-medium">
                     Status
                   </th>
-                  <th className="text-left p-6 text-gray-300 font-medium">
+                  {/* <th className="text-left p-6 text-gray-300 font-medium">
                     Actions
-                  </th>
+                  </th> */}
                 </tr>
               </thead>
               <tbody>
                 {filteredTickets.map((ticket: any, index: any) => (
                   <motion.tr
-                    key={index}
+                    key={ticket.id || index}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 * index }}
@@ -155,18 +199,31 @@ const MyTickets = () => {
                     <td className="p-6">
                       <div className="flex items-center space-x-4">
                         <div className="w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-r from-purple-500 to-pink-500">
-                          <img
-                            src={ticket.image}
-                            alt={ticket.title}
-                            className="w-full h-full object-cover"
-                          />
+                          {ticket.image || ticket.eventImage ? (
+                            <img
+                              src={ticket.image || ticket.eventImage}
+                              alt={
+                                ticket.title ||
+                                ticket.eventTitle ||
+                                ticket.eventName
+                              }
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Ticket className="w-8 h-8 text-white" />
+                            </div>
+                          )}
                         </div>
                         <div>
                           <h3 className="text-white font-semibold text-lg">
-                            {ticket.title}
+                            {ticket.title ||
+                              ticket.eventTitle ||
+                              ticket.eventName ||
+                              "Untitled Event"}
                           </h3>
                           <p className="text-gray-400 text-sm">
-                            {ticket.venue}
+                            {ticket.venue || ticket.location || "Venue TBD"}
                           </p>
                         </div>
                       </div>
@@ -175,35 +232,34 @@ const MyTickets = () => {
                       <div className="flex items-center space-x-2">
                         <Hash className="w-4 h-4 text-gray-400" />
                         <span className="text-white font-medium">
-                          {ticket.quantity}
+                          {ticket.quantity || 1}
                         </span>
                       </div>
                     </td>
                     <td className="p-6">
                       <div className="flex items-center space-x-2">
-                        <Calendar className="w-4 h-4 text-gray-400" />
                         <span className="text-white">
-                          {new Date(ticket.date).toLocaleDateString()}
+                          {ticket.purchasedAt
+                            ? formatTimestamp(ticket?.purchasedAt)
+                            : "N/A"}
                         </span>
                       </div>
                     </td>
                     <td className="p-6">
                       <div className="flex items-center space-x-2">
-                        <DollarSign className="w-4 h-4 text-gray-400" />
-                        <span className="text-white font-medium">
-                          {ticket.price}
-                        </span>
-                        <span className="text-gray-400 text-sm">
-                          {ticket.currency}
-                        </span>
+                        {/* <DollarSign className="w-4 h-4 text-gray-400" /> */}
+                        <span className="text-white font-medium">Free</span>
+                        {/* <span className="text-gray-400 text-sm">
+                          {ticket.price || "Sol"}
+                        </span> */}
                       </div>
                     </td>
                     <td className="p-6">
-                      <StatusBadge status={ticket.status} />
+                      <StatusBadge status={ticket.status || "pending"} />
                     </td>
-                    <td className="p-6">
+                    {/* <td className="p-6">
                       <ActionMenu ticket={ticket} />
-                    </td>
+                    </td> */}
                   </motion.tr>
                 ))}
               </tbody>
@@ -214,7 +270,7 @@ const MyTickets = () => {
           <div className="mb-16 md:mb-0 md:hidden space-y-4 p-4">
             {filteredTickets.map((ticket: any, index: any) => (
               <motion.div
-                key={index}
+                key={ticket.id || index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * index }}
@@ -223,17 +279,32 @@ const MyTickets = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 rounded-lg overflow-hidden bg-gradient-to-r from-purple-500 to-pink-500">
-                      <img
-                        src={ticket.image}
-                        alt={ticket.title}
-                        className="w-full h-full object-cover"
-                      />
+                      {ticket.image || ticket.eventImage ? (
+                        <img
+                          src={ticket.image || ticket.eventImage}
+                          alt={
+                            ticket.title ||
+                            ticket.eventTitle ||
+                            ticket.eventName
+                          }
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Ticket className="w-6 h-6 text-white" />
+                        </div>
+                      )}
                     </div>
                     <div>
                       <h3 className="text-white font-semibold">
-                        {ticket.title}
+                        {ticket.title ||
+                          ticket.eventTitle ||
+                          ticket.eventName ||
+                          "Untitled Event"}
                       </h3>
-                      <p className="text-gray-400 text-sm">{ticket.venue}</p>
+                      <p className="text-gray-400 text-sm">
+                        {ticket.venue || ticket.location || "Venue TBD"}
+                      </p>
                     </div>
                   </div>
                   <ActionMenu ticket={ticket} />
@@ -242,24 +313,31 @@ const MyTickets = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-gray-400 text-xs">Quantity</p>
-                    <p className="text-white font-medium">{ticket.quantity}</p>
+                    <p className="text-white font-medium">
+                      {ticket.quantity || 1}
+                    </p>
                   </div>
                   <div>
                     <p className="text-gray-400 text-xs">Date</p>
                     <p className="text-white font-medium">
-                      {new Date(ticket.date).toLocaleDateString()}
+                      {ticket.date
+                        ? new Date(ticket.date).toLocaleDateString()
+                        : ticket.eventDate
+                        ? new Date(ticket.eventDate).toLocaleDateString()
+                        : "Date TBD"}
                     </p>
                   </div>
                   <div>
                     <p className="text-gray-400 text-xs">Price</p>
                     <p className="text-white font-medium">
-                      {ticket.price} {ticket.currency}
+                      {ticket.price || ticket.amount || "0"}{" "}
+                      {ticket.currency || "USD"}
                     </p>
                   </div>
-                  <div>
+                  {/* <div>
                     <p className="text-gray-400 text-xs">Status</p>
-                    <StatusBadge status={ticket.status} />
-                  </div>
+                    <StatusBadge status={ticket.status || "pending"} />
+                  </div> */}
                 </div>
               </motion.div>
             ))}
@@ -267,7 +345,7 @@ const MyTickets = () => {
         </motion.div>
 
         {/* Empty State */}
-        {filteredTickets.length === 0 && (
+        {!loading && filteredTickets.length === 0 && tickets.length === 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -277,9 +355,33 @@ const MyTickets = () => {
             <h3 className="text-xl font-semibold text-gray-300 mb-2">
               No tickets found
             </h3>
-            <p className="text-gray-500">Try adjusting your search criteria</p>
+            <p className="text-gray-500">
+              {searchTerm
+                ? "Try adjusting your search criteria"
+                : "You haven't purchased any tickets yet"}
+            </p>
           </motion.div>
         )}
+
+        {/* No search results */}
+        {!loading &&
+          filteredTickets.length === 0 &&
+          tickets.length > 0 &&
+          searchTerm && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-12"
+            >
+              <Search className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-300 mb-2">
+                No matching tickets found
+              </h3>
+              <p className="text-gray-500">
+                Try searching with different keywords
+              </p>
+            </motion.div>
+          )}
       </div>
     </div>
   );

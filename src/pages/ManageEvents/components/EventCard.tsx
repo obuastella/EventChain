@@ -1,6 +1,11 @@
-import { Edit, Users } from "lucide-react";
+//@ts-nocheck
+import { Calendar, Edit, MapPin, Users } from "lucide-react";
+import { useTickets } from "../../../hooks/useTickets";
 
-const EventCard = ({ event, index, onViewBuyers }) => {
+const EventCard = ({ event, index, onViewBuyers }: any) => {
+  const eventId = event?.id;
+  const ticketsData = useTickets(eventId);
+
   const isFreeEvent =
     event.ticketType === "free" || parseFloat(event.priceUSD) === 0;
 
@@ -10,7 +15,7 @@ const EventCard = ({ event, index, onViewBuyers }) => {
   };
 
   return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all">
+    <div className=" bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all">
       <div className="relative">
         <img
           src={event.image}
@@ -29,14 +34,18 @@ const EventCard = ({ event, index, onViewBuyers }) => {
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-6 mb-14">
         <h3 className="text-xl font-bold text-white mb-2">{event.title}</h3>
         <div className="flex items-center space-x-2 text-gray-400 mb-1">
-          <span>📅</span>
+          <span>
+            <Calendar size={18} />
+          </span>
           <span>{new Date(event.date).toLocaleDateString()}</span>
         </div>
         <div className="flex items-center space-x-2 text-gray-400 mb-4">
-          <span>📍</span>
+          <span>
+            <MapPin size={18} />
+          </span>
           <span>{event.venue}</span>
         </div>
 
@@ -46,7 +55,9 @@ const EventCard = ({ event, index, onViewBuyers }) => {
             <p className="text-sm text-gray-400">
               {isFreeEvent ? "Registered" : "Sold"}
             </p>
-            <p className="text-lg font-semibold text-white">{event.sold}</p>
+            <p className="text-lg font-semibold text-white">
+              {ticketsData.tickets.length}
+            </p>
           </div>
           <div className="text-center">
             <p className="text-sm text-gray-400">Capacity</p>
@@ -70,7 +81,9 @@ const EventCard = ({ event, index, onViewBuyers }) => {
             <span>
               {isFreeEvent ? "Registration Progress" : "Sales Progress"}
             </span>
-            <span>{Math.round((event.sold / event.capacity) * 100)}%</span>
+            <span>
+              {Math.round((ticketsData.tickets.length / event.capacity) * 100)}%
+            </span>
           </div>
           <div className="w-full bg-gray-700 rounded-full h-2">
             <div
