@@ -163,17 +163,24 @@ const ManageEvents = () => {
                 // onDelete={() => handleEventDelete(event.id)}
               />
             ))} */}
-            {filteredEvents
-              .filter((event) => event.userId === user?.id)
-              .map((event, index) => (
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  index={index}
-                  onViewBuyers={handleEventSelect}
-                  onEdit={() => handleEditModal(event?.id)}
-                />
-              ))}
+            {filteredEvents.filter((event) => event.userId === user?.id)
+              .length === 0 ? (
+              <p className="text-gray-400 text-center mt-8">
+                You haven't hosted any events yet.
+              </p>
+            ) : (
+              filteredEvents
+                .filter((event) => event.userId === user?.id)
+                .map((event, index) => (
+                  <EventCard
+                    key={event.id}
+                    event={event}
+                    index={index}
+                    onViewBuyers={handleEventSelect}
+                    onEdit={() => handleEditModal(event?.id)}
+                  />
+                ))
+            )}
           </div>
         )}
 
