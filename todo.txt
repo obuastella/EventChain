@@ -1,0 +1,8 @@
+TODO:
+I> Create an Event:
+1. Get user cred -done
+2. Create event tied to user cred and store in firebase -done
+3. Retrieve created event immeiately using react query or smth and have it displayed immediately in ui.
+4. Set up database schema to create event -done
+5. Edit event details
+6. Search for events and show no events found for events that do not exist

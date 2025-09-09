@@ -1,29 +1,64 @@
 import { useUser } from "@civic/auth-web3/react";
 import { motion } from "framer-motion";
 import { Hand } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { userHasWallet } from "@civic/auth-web3";
+import { useSyncUserToFirestore } from "../../../helpers/useSyncUserToFirestore";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../../config/firebase";
+
 export default function Header() {
+  useSyncUserToFirestore();
+
   const { user } = useUser();
   const userContext = useUser();
+  const walletCreatedRef = useRef(false);
 
   useEffect(() => {
     async function checkOrCreateWallet() {
-      // Check if userContext and user exist
+      if (walletCreatedRef.current) return;
       if (!userContext || !userContext.user) return;
 
+      // If no wallet, create one
       if (!userHasWallet(userContext)) {
-        // console.log("User has no wallet, creating one...");
-        // Call createWallet on the userContext, not the user
-        await userContext.createWallet();
-        // console.log("Wallet created!");
+        try {
+          walletCreatedRef.current = true;
+          console.log("User has no wallet, creating one...");
+          await userContext.createWallet();
+          console.log("Wallet created!");
+
+          // 🔥 Update Firestore with the new wallet
+          if (userContext?.solana?.address) {
+            const userRef = doc(db, "users", userContext.user.id);
+            await updateDoc(userRef, {
+              wallet: userContext.solana.address,
+            });
+            console.log(
+              "Firestore updated with wallet:",
+              userContext.solana.address
+            );
+          }
+        } catch (error) {
+          console.error("Failed to create wallet:", error);
+          walletCreatedRef.current = false;
+        }
       } else {
-        // console.log("User already has a wallet:", userContext.solana.address);
+        console.log("User already has a wallet:", userContext.solana.address);
+
+        // 🔥 Ensure Firestore has the wallet address too
+        if (userContext.solana?.address) {
+          const userRef = doc(db, "users", userContext.user.id);
+          await updateDoc(userRef, {
+            wallet: userContext.solana.address,
+          });
+          console.log("Firestore synced wallet:", userContext.solana.address);
+        }
       }
     }
 
     checkOrCreateWallet();
-  }, [userContext]);
+  }, [userContext?.user?.id, userContext?.solana?.address]);
+
   return (
     <motion.section
       className="rounded-sm relative p-6 md:p-8 flex items-start gap-4 w-full h-32 overflow-hidden"
@@ -36,6 +71,7 @@ export default function Header() {
           src="/images/header.jpg"
           alt="Background"
           className="w-full h-full object-cover object-center opacity-90"
+          loading="lazy" // Add lazy loading for better performance
         />
         <div className="absolute inset-0 bg-primary/70 mix-blend-multiply" />
       </div>

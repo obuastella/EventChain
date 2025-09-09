@@ -1,8 +1,13 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import ImageUploader from "../../../helpers/ImageUploader";
+import { useUser } from "@civic/auth-web3/react";
+import { serverTimestamp } from "firebase/firestore";
+import { useEvents } from "../../../hooks/useEvents";
 
 const CreateEventModal = ({ onClose }: any) => {
+  const { user } = useUser();
+  const { createEvent } = useEvents();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,14 +60,17 @@ const CreateEventModal = ({ onClose }: any) => {
     const payload = {
       ...formData,
       image: imageUrl,
+      email: user?.email,
+      creator: user?.name,
+      userId: user?.id,
+      createdAt: serverTimestamp(),
     };
-
-    // TODO: send to firebase and store
     try {
-      console.log("Event Created:", payload);
-      setIsLoading(false);
-    } catch {
-      console.log("An error occurred creating event...");
+      await createEvent(payload);
+      onClose();
+    } catch (error) {
+      console.error("❌ Error creating event:", error);
+    } finally {
       setIsLoading(false);
     }
     onClose();
@@ -75,7 +83,7 @@ const CreateEventModal = ({ onClose }: any) => {
       onClick={() => onClose()}
     >
       <div
-        className="bg-gray-900/95 backdrop-blur-sm border border-white/20 rounded-3xl p-8 md:max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-gray-900/95 backdrop-blur-sm border border-white/20 rounded-3xl p-8 md:max-w-3xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <form

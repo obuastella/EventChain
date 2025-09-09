@@ -1,10 +1,10 @@
-//@ts-nocheck
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@civic/auth-web3/react";
 import { userHasWallet } from "@civic/auth-web3";
-import { useEffect, useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Connection, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   Wallet,
   RefreshCw,
@@ -20,100 +20,114 @@ import Loading from "./Loading";
 const WalletBalance = () => {
   const navigate = useNavigate();
   const userContext: any = useUser();
+  const queryClient = useQueryClient();
+
   const [showBalance, setShowBalance] = useState(true);
-  const [balance, setBalance] = useState(0);
-  const [usdValue, setUsdValue] = useState(0);
-  const [solPrice, setSolPrice] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [error, setError] = useState(null);
 
-  // Solana RPC connection - using devnet for testing, you can switch to mainnet with your own RPC
-  const connection = new Connection("https://api.devnet.solana.com");
+  // Memoize connection to avoid recreating
+  const connection = useMemo(
+    () => new Connection("https://api.devnet.solana.com"),
+    []
+  );
 
-  // Fetch SOL price from CoinGecko
-  const fetchSolPrice = async () => {
-    try {
+  // Memoize wallet address
+  const walletAddress = useMemo(() => {
+    return userHasWallet(userContext) ? userContext.solana.address : null;
+  }, [userContext]);
+
+  // Fetch SOL price with caching
+  const { data: solPrice = 158 } = useQuery({
+    queryKey: ["solPrice"],
+    queryFn: async () => {
       const response = await fetch(
         "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
       );
       const data = await response.json();
       return data.solana.usd;
-    } catch (error) {
-      console.error("Error fetching SOL price:", error);
-      return 158; // Fallback price
-    }
-  };
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    retry: 2,
+    enabled: !!walletAddress,
+  });
 
-  // Fetch wallet balance
-  const fetchBalance = async () => {
-    try {
-      setError(null);
-      const { publicKey } = userContext.solana.wallet;
-      const balanceInLamports = await connection.getBalance(publicKey);
-      const balanceInSol = balanceInLamports / LAMPORTS_PER_SOL;
+  // Fetch wallet balance with caching
+  const {
+    data: balance = 0,
+    isLoading,
+    refetch: refetchBalance,
+    isRefetching,
+    error,
+  } = useQuery({
+    queryKey: ["walletBalance", walletAddress],
+    queryFn: async () => {
+      if (!userContext?.solana?.wallet?.publicKey) {
+        throw new Error("No wallet found");
+      }
 
-      // Get current SOL price
-      const currentSolPrice = await fetchSolPrice();
+      const balanceInLamports = await connection.getBalance(
+        userContext.solana.wallet.publicKey
+      );
+      return balanceInLamports / LAMPORTS_PER_SOL;
+    },
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!walletAddress && !!userContext?.solana?.wallet?.publicKey,
+    retry: 2,
+    refetchOnWindowFocus: false, // Prevent refetch on window focus
+  });
 
-      setBalance(balanceInSol);
-      setSolPrice(currentSolPrice);
-      setUsdValue(balanceInSol * currentSolPrice);
-      // console.log("Updated SOL price:", currentSolPrice);
-    } catch (error) {
-      console.error("Error fetching balance:", error);
-      // setError("Failed to fetch balance");
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  };
+  // Memoize USD value calculation
+  const usdValue = useMemo(() => {
+    return balance * solPrice;
+  }, [balance, solPrice]);
 
-  // Refresh balance
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await fetchBalance();
-  };
+  // Airdrop mutation
+  const airdropMutation = useMutation({
+    mutationFn: async () => {
+      if (!userContext?.solana?.wallet?.publicKey) {
+        throw new Error("No wallet found");
+      }
 
-  // Airdrop devnet SOL for testing
-  const requestAirdrop = async () => {
-    try {
-      setIsRefreshing(true);
-      const { publicKey } = userContext.solana.wallet;
-
-      // Request 2 SOL airdrop (2 * LAMPORTS_PER_SOL)
       const signature = await connection.requestAirdrop(
-        publicKey,
+        userContext.solana.wallet.publicKey,
         2 * LAMPORTS_PER_SOL
       );
 
-      // Wait for confirmation
-      // await connection.confirmTransaction(signature);
       await connection.confirmTransaction(signature, "finalized");
-
-      // Refresh balance after airdrop
-      await fetchBalance();
-
+      return signature;
+    },
+    onSuccess: () => {
+      // Invalidate balance query to trigger refetch
+      queryClient.invalidateQueries({
+        queryKey: ["walletBalance", walletAddress],
+      });
       toast.success("🎉 2 SOL added to your devnet wallet!");
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error("Airdrop failed:", error);
       toast.error("❌ Airdrop failed. Try again in a few minutes.");
-      setIsRefreshing(false);
-    }
-  };
+    },
+  });
 
-  // function to handle copying
-  const handleCopyAddress = async () => {
+  // Optimized refresh handler
+  const handleRefresh = useCallback(async () => {
+    await refetchBalance();
+  }, [refetchBalance]);
+
+  // Copy address handler
+  const handleCopyAddress = useCallback(async () => {
+    if (!walletAddress) return;
+
     try {
-      await navigator.clipboard.writeText(userContext.solana.address);
+      await navigator.clipboard.writeText(walletAddress);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error("Failed to copy address:", err);
       // Fallback for older browsers
       const textArea = document.createElement("textarea");
-      textArea.value = userContext.solana.address;
+      textArea.value = walletAddress;
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand("copy");
@@ -121,53 +135,9 @@ const WalletBalance = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
-  };
+  }, [walletAddress]);
 
-  // Listen for wallet balance update events
-  useEffect(() => {
-    const handleBalanceUpdate = (event: CustomEvent) => {
-      console.log("Balance update event received:", event.detail);
-      // Add a small delay to ensure the transaction is fully processed
-      setTimeout(() => {
-        handleRefresh();
-      }, 1000);
-    };
-
-    // Add event listener
-    window.addEventListener(
-      "walletBalanceUpdate",
-      handleBalanceUpdate as EventListener
-    );
-
-    // Cleanup
-    return () => {
-      window.removeEventListener(
-        "walletBalanceUpdate",
-        handleBalanceUpdate as EventListener
-      );
-    };
-  }, [userContext]);
-
-  // Initial fetch
-  useEffect(() => {
-    if (userHasWallet(userContext) && userContext.solana.wallet?.publicKey) {
-      fetchBalance();
-    }
-  }, [userContext]);
-
-  //
-  useEffect(() => {
-    const handleBalanceUpdate = () => {
-      fetchBalance();
-    };
-
-    window.addEventListener("walletBalanceUpdate", handleBalanceUpdate);
-
-    return () => {
-      window.removeEventListener("walletBalanceUpdate", handleBalanceUpdate);
-    };
-  }, []);
-
+  // Early returns for loading states
   if (!userContext || !userContext.solana || !userContext.solana.wallet) {
     return <Loading />;
   }
@@ -185,7 +155,7 @@ const WalletBalance = () => {
       >
         <div className="text-center">
           <p className="text-red-400 font-medium">Error loading wallet</p>
-          <p className="text-sm text-gray-400 mt-1">{error}</p>
+          <p className="text-sm text-gray-400 mt-1">{error.message}</p>
           <button
             onClick={handleRefresh}
             className="mt-3 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-sm text-white transition-colors"
@@ -200,6 +170,8 @@ const WalletBalance = () => {
   const handleBuyTicket = () => {
     navigate("/discover");
   };
+
+  const isRefreshing = isRefetching || airdropMutation.isLoading;
 
   return (
     <motion.div
@@ -217,7 +189,6 @@ const WalletBalance = () => {
           {isLoading ? (
             <Loading />
           ) : (
-            // Loaded State
             <motion.div
               key="loaded"
               initial={{ opacity: 0, y: 10 }}
@@ -248,7 +219,6 @@ const WalletBalance = () => {
                     >
                       Wallet Connected ✨
                     </motion.h3>
-                    {/* copy button to copy wallet address */}
                     <motion.div
                       className="flex items-center space-x-1 group"
                       initial={{ opacity: 0 }}
@@ -256,8 +226,8 @@ const WalletBalance = () => {
                       transition={{ delay: 0.3 }}
                     >
                       <motion.p className="text-xs text-gray-400">
-                        {userContext.solana.address.slice(0, 6)}...
-                        {userContext.solana.address.slice(-4)}
+                        {walletAddress?.slice(0, 6)}...
+                        {walletAddress?.slice(-4)}
                       </motion.p>
                       <motion.button
                         onClick={handleCopyAddress}
@@ -387,15 +357,7 @@ const WalletBalance = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9 }}
               >
-                {/* Main Action Buttons */}
                 <div className="flex space-x-2">
-                  <motion.button
-                    className="flex-1 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg py-2 px-3 text-sm font-medium text-white transition-colors"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    Send
-                  </motion.button>
                   <motion.button
                     onClick={handleBuyTicket}
                     className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg py-2 px-3 text-sm font-medium text-white transition-colors"
@@ -406,14 +368,13 @@ const WalletBalance = () => {
                   </motion.button>
                 </div>
 
-                {/* Devnet Airdrop Button (only show in dev) */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 1.0 }}
                 >
                   <motion.button
-                    onClick={requestAirdrop}
+                    onClick={() => airdropMutation.mutate()}
                     disabled={isRefreshing}
                     className="w-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 hover:from-green-500/30 hover:to-emerald-500/30 border border-green-500/30 rounded-lg py-2 px-3 text-sm font-medium text-green-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     whileHover={{ scale: 1.02 }}

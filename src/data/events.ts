@@ -1,0 +1,87 @@
+export const events = [
+  {
+    id: 1,
+    title: "NFT Art Gallery Opening",
+    date: "2025-06-22",
+    venue: "New York, NY",
+    capacity: 200,
+    sold: 120,
+    priceUSD: "75.00",
+    ticketType: "paid",
+    status: "active",
+    image:
+      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=250&fit=crop",
+    buyers: [
+      {
+        id: 3,
+        name: "Emma Wilson",
+        wallet: "0x5432...8765",
+        tickets: 1,
+        date: "2025-06-11",
+        amount: "$75.00",
+      },
+      {
+        id: 6,
+        name: "James Thompson",
+        wallet: "0x7890...3456",
+        tickets: 2,
+        date: "2025-06-10",
+        amount: "$150.00",
+      },
+    ],
+  },
+  {
+    id: 2,
+    title: "Community Meetup",
+    date: "2025-06-25",
+    venue: "Los Angeles, CA",
+    capacity: 150,
+    sold: 89,
+    priceUSD: "0.00",
+    ticketType: "free",
+    status: "active",
+    image:
+      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop",
+    buyers: [
+      {
+        id: 7,
+        name: "Sarah Davis",
+        wallet: "0x9876...5432",
+        tickets: 1,
+        date: "2025-06-12",
+        amount: "Free",
+      },
+      {
+        id: 8,
+        name: "Mike Johnson",
+        wallet: "0x1234...9876",
+        tickets: 1,
+        date: "2025-06-11",
+        amount: "Free",
+      },
+    ],
+  },
+  {
+    id: 3,
+    title: "Web3 Workshop",
+    date: "2025-07-01",
+    venue: "San Francisco, CA",
+    capacity: 100,
+    sold: 67,
+    priceUSD: "25.00",
+    ticketType: "paid",
+    status: "active",
+    image:
+      "https://images.unsplash.com/photo-1559223607-b4d0555ae227?w=400&h=250&fit=crop",
+    buyers: [
+      {
+        id: 9,
+        name: "Alex Chen",
+        wallet: "0xabcd...1234",
+        tickets: 1,
+        date: "2025-06-13",
+        amount: "$25.00",
+      },
+    ],
+  },
+];
