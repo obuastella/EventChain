@@ -9,12 +9,14 @@ import NoResults from "./components/NoResults";
 import ManageEventsHeader from "./components/Header";
 import BuyersModal from "./components/BuyersModal";
 import CreateEventModal from "./components/CreateEventModal";
+import EditEventModal from "./components/EditEventModal";
 
 const ManageEvents = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
-
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState();
   // Use the custom hook
   const { events, loading, error } = useEvents();
 
@@ -42,6 +44,14 @@ const ManageEvents = () => {
     setShowCreateModal(false);
   };
 
+  const handleEditModal = (id) => {
+    setShowEditModal(true);
+    setSelectedEventId(id);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+  };
   // Handle event creation from the modal
   // const handleEventCreated = async (eventData) => {
   //   try {
@@ -193,7 +203,7 @@ const ManageEvents = () => {
                 event={event}
                 index={index}
                 onViewBuyers={handleEventSelect}
-                onEdit={(event) => console.log("Edit event:", event.id)}
+                onEdit={() => handleEditModal(event?.id)}
                 // onDelete={() => handleEventDelete(event.id)}
               />
             ))}
@@ -212,6 +222,13 @@ const ManageEvents = () => {
           <CreateEventModal
             onClose={handleCloseCreateModal}
             // onEventCreated={handleEventCreated}
+          />
+        )}
+        {/* Edit Event Modal */}
+        {showEditModal && (
+          <EditEventModal
+            eventId={selectedEventId}
+            onClose={handleCloseEditModal}
           />
         )}
       </div>
