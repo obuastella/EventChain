@@ -35,30 +35,6 @@ const PurchaseTicket: React.FC<PurchaseTicketProps> = ({
       onClose();
       return;
     }
-    // const payload = {
-    //   eventID: selectedEvent?.id,
-    //   userId: user.id,
-    //   userName: user.name,
-    //   email: user?.email,
-    //   wallet: userContext?.solana?.address || "",
-    //   eventTitle: selectedEvent?.title,
-    //   venue: selectedEvent?.venue,
-    //   eventImage: selectedEvent?.image,
-    //   ticketType: selectedEvent?.ticketType,
-    //   purchasedAt: new Date(),
-    //   status: "active",
-    // };
-
-    // try {
-    //   console.log("Payload: ", payload);
-    //   // TODO: Hanlde purchase request
-    //   setIsLoading(false);
-    // } catch (err) {
-    //   console.log("An error occured while purchasing ticket...", err);
-    //   setIsLoading(false);
-    // }
-    // setIsLoading(false);
-    // const ticketId = uuidv4(); // unique ticket id
     const payload = {
       eventID: selectedEvent.id,
       userId: user.id,

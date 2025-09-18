@@ -9,6 +9,7 @@ import MyTickets from "./pages/MyTickets/MyTickets";
 import ManageEvents from "./pages/ManageEvents/ManageEvents";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useSyncUserToFirestore } from "./helpers/useSyncUserToFirestore";
+import SharedEventPage from "./pages/SharedEvents/SharedEvents";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -63,6 +64,14 @@ function App() {
                 element={
                   <Layout>
                     <ManageEvents />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/event/:eventId"
+                element={
+                  <Layout>
+                    <SharedEventPage />
                   </Layout>
                 }
               />
